@@ -4,11 +4,14 @@ import AboutTab from "./AboutTab";
 import BaseStatsTab from "./BaseStatsTab";
 import EvolutionTab from "./EvolutionTab";
 import MovesTab from "./MovesTab";
+import pokeballLoading from "../../assets/img/pokeballLoading.png"; // Ruta de la imagen
 import imagenNoDisponible from "../../assets/img/pikachuTriste.png"; // Ruta de la imagen
 
 function PokemonModal({ isOpen }) {
   const context = useContext(PokemonContext);
-  const [activeTab, setActiveTab] = useState("about");
+  const [activeTab, setActiveTab] = useState("");
+  const [imageSrc, setImageSrc] = useState(pokeballLoading); // Imagen inicial de carga
+  const [isImageLoading, setIsImageLoading] = useState(true); // Estado para saber si la imagen está cargando
 
   const mainType = context.selectedPokemon?.types[0]?.type.name || "normal";
 
@@ -34,10 +37,35 @@ function PokemonModal({ isOpen }) {
   };
 
   useEffect(() => {
-    if (isOpen) setActiveTab("moves");
-  }, [isOpen]);
+    if (isOpen) {
+      setActiveTab("evolution");
+      setImageSrc(pokeballLoading); // Restablece la imagen al abrir el modal
+      setIsImageLoading(true);
 
-  const bgColor = bgColors[mainType] || "bg-green-500";
+      const imageTimeout = setTimeout(() => {
+        if (isImageLoading) {
+          setImageSrc(imagenNoDisponible); // Muestra imagen de "no disponible" después de 10 segundos
+          setIsImageLoading(false);
+        }
+      }, 10000);
+
+      const img = new Image();
+      img.src =
+        context.selectedPokemon.sprites.other["official-artwork"].front_default;
+      img.onload = () => {
+        clearTimeout(imageTimeout); // Cancela el temporizador si la imagen se carga a tiempo
+        setImageSrc(img.src); // Actualiza la fuente de la imagen con la imagen cargada
+        setIsImageLoading(false);
+      };
+      img.onerror = () => {
+        clearTimeout(imageTimeout); // Cancela el temporizador si ocurre un error de carga
+        setImageSrc(imagenNoDisponible); // Actualiza con la imagen de "no disponible"
+        setIsImageLoading(false);
+      };
+
+      return () => clearTimeout(imageTimeout); // Limpia el temporizador al desmontar el componente
+    }
+  }, [isOpen, context.selectedPokemon]);
 
   const handleCloseModal = useCallback(() => {
     context.setSelectedPokemon(null);
@@ -71,6 +99,8 @@ function PokemonModal({ isOpen }) {
         return null;
     }
   };
+
+  const bgColor = bgColors[mainType] || "bg-green-500";
 
   return (
     <section className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -108,10 +138,7 @@ function PokemonModal({ isOpen }) {
 
           <div className="absolute top-12 sm:top-14 md:top-5 left-1/2 transform -translate-x-1/2 z-10">
             <img
-              src={
-                context.selectedPokemon.sprites.other["official-artwork"]
-                  .front_default
-              }
+              src={imageSrc} // Utiliza el estado local para mostrar la imagen
               alt={context.selectedPokemon.name}
               className="h-28 sm:h-40 md:h-52 object-contain"
             />

@@ -16,6 +16,7 @@ export const PokemonProvider = ({ children }) => {
   const [evolutionChain, setEvolutionChain] = useState([]); // Nueva propiedad
   const [isImgLoading, setIsImgLoading] = useState(true); // Estado para manejar la carga de la imagen
   const [hasErrorImgLoading, setHasErrorImgLoading] = useState(false); // Estado para manejar el error si la imagen no carga
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado para manejar el inicio de session
 
   // Función para consumir la API de Pokémon con paginación
   const fetchPokemon = async (offset = 0) => {
@@ -143,6 +144,8 @@ export const PokemonProvider = ({ children }) => {
         setIsImgLoading,
         hasErrorImgLoading,
         setHasErrorImgLoading,
+        isAuthenticated,
+        setIsAuthenticated, // Control del inicio de sesión
       }}
     >
       {children}

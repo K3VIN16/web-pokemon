@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import imagenNoDisponible from "../assets/img/pikachuTriste.png"; // Ruta de la imagen
 import pokeballLoading from "../assets/img/pokeballLoading.png"; // Ruta de la imagen
+import imagenNoDisponible from "../assets/img/pikachuTriste.png"; // Ruta de la imagen
 
 // Mapeo de tipos a colores
 const typeColors = {
